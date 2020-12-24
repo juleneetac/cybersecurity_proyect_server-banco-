@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 
 
-app.use('/tienda', smartCity);   
+app.use('/banco', smartCity);   
 
 
 
