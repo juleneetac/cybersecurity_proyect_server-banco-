@@ -42,18 +42,22 @@ async function getPublicKeyRSA(req, res) {
   
    async function get1Euro(req, res) {   // aquí el servidor firma lo que le llega pero sin saber que es lo que le ha llegado y lo devuelve firmado
     try {                                    //esto lo hará el banco
-      const m = bc.hexToBigint(req.body.firmame);
-      let signedbm;
+      const m = []; //= bc.hexToBigint(req.body.firmame);
+      let signedbm = [];
+      let signedbmhex = [];
       let i = 0;
-      while (i < m.length ){
+      while (i < req.body.firmame.length ){
+        m[i] = bc.hexToBigint(req.body.firmame[i]);  //si llega OK
         signedbm[i] = rsa.privateKey.sign(m[i])
+        signedbmhex[i] = bc.bigintToHex(signedbm[i])  // convertir a hezadecimal
         i++;
       }
       //const signedbm = rsa.privateKey.sign(m)
 
-      res.status(200).send({msg: bc.bigintToHex(signedbm)})
+      res.status(200).send({msg: signedbmhex})
     }
     catch(err) {
+      console.log(err)
       res.status(500).send ({ message: err})
     }
   }
