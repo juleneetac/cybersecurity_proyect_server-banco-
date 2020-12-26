@@ -12,7 +12,7 @@ export class User {
     username: String;
     password: String;
     money: Number;
-    hash: String ;
+    hash: String;
     salt: string;
     keysharing;
 

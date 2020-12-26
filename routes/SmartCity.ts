@@ -10,7 +10,7 @@ let bancoControl = require('../controllers/bancoControl');
 router.post('/login1', loginControl.login1);  
 router.post('/login2shared', loginControl.login2shared);
 
-router.get('/publickey', bancoControl.getPublicKeyRSA);   //le paso la publicKey del server (banco) al client
+router.get('/publickeyBanco', bancoControl.getPublicKeyRSAbanco);   //le paso la publicKey del server (banco) al client
 router.post('/getDinero', bancoControl.get1Euro);   //el cliente me pide una cantidad de dinero y yo lo firmo
 
 

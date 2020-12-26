@@ -21,7 +21,7 @@ execrsa()   //ejecuta el generateRandomKeys() al iniciarse el program para tener
 
   ////////////////////////////////////////  RSA   ////////////////////////////////////////////
 
-async function getPublicKeyRSA(req, res) {  
+async function getPublicKeyRSAbanco(req, res) {  
 
     try {
       //keyPair = await rsa.generateRandomKeys(); //NO PONER this.
@@ -73,6 +73,6 @@ async function execrsa(){   //genera las keyPair
   }
 
   module.exports = {
-    getPublicKeyRSA, 
+    getPublicKeyRSAbanco, 
     get1Euro
   };
