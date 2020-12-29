@@ -12,7 +12,7 @@ router.post('/login2shared', loginControl.login2shared);
 
 router.get('/publickeyBanco', bancoControl.getPublicKeyRSAbanco);   //le paso la publicKey del server (banco) al client
 router.post('/getDinero', bancoControl.get1Euro);   //el cliente me pide una cantidad de dinero y yo lo firmo
-
+router.post('/verificaridmoneda', bancoControl.verificaridmoneda); 
 
 ///////////////////////////////AES/////////////////////////////
 router.post('/addPost', tiendaControl.postCaso);   

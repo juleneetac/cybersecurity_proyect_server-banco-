@@ -11,7 +11,7 @@ export class User {
   //user attributes
     username: String;
     password: String;
-    money: Number;
+    money: number;
     hash: String;
     salt: string;
     keysharing;

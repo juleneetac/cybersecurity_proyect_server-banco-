@@ -25,16 +25,17 @@ let ttpPubKey: PublicKey;
 let ivc;
 
 //users login normal
-let alex = new User("alex", "", 1000)
+let user: User;
+let alex = new User("alex", "", 30)
 alex.setPassword("111")
-let pep = new User("pep", "", 2000)
+let pep = new User("pep", "", 30)
 pep.setPassword("222")
 let listusers = [alex, pep]
 
 //users login secret sharing
-let jul = new User("jul", "", 1000)
+let jul = new User("jul", "", 30)
 jul.setPassword("clavejulen")
-let harjot = new User("harjot", "", 2000)
+let harjot = new User("harjot", "", 30)
 harjot.setPassword("clavehar")
 let listsecret = [jul, harjot]
 
@@ -44,19 +45,19 @@ async function login1 (req, res){
         let usuario = req.body;
         console.log("username body: " + usuario.username)
         console.log("contraseña body :" + usuario.password)
-        let finduser = await listusers.find(x => x.username == usuario.username)
-        console.log(finduser)
+         user = await listusers.find(x => x.username == usuario.username)
+        console.log(user)
         console.log("Se intenta logear el usuario " + usuario.username) //el que escribo ahora no el que ya tengo en la db
 
-        if (!finduser) {
+        if (!user) {
           return res.status(404).send({message: 'Usuario no encontrado'})
         } 
 
-        else if(finduser.validatePassword(usuario.password)){ //la primera contraseña es como se llama en la db y la segunda la del json
+        else if(user.validatePassword(usuario.password)){ //la primera contraseña es como se llama en la db y la segunda la del json
             console.log("llega? ");
-            let jwt = finduser.generateJWT();
-            console.log("su nombre es:"+ finduser.username)
-            return res.status(200).json({jwt: jwt, username: finduser.username}); //lo que se pone en el json
+            let jwt = user.generateJWT();
+            console.log("su nombre es:"+ user.username)
+            return res.status(200).json({jwt: jwt, username: user.username}); //lo que se pone en el json
         }
         else {
           res.status(402).send({message: 'Incorrect password'})
@@ -66,7 +67,9 @@ async function login1 (req, res){
       // res.status(503).send(err)
       //}
 }
-
+async function getuser(){
+  return user
+}
 
 async function login2shared (req, res){
 
@@ -107,19 +110,21 @@ async function login2shared (req, res){
 
   let usuario = req.body;
         console.log("username body: " + usuario.username)
-        let finduser = await listsecret.find(x => x.username == usuario.username)
-        console.log(finduser)
+        let user = await listsecret.find(x => x.username == usuario.username)
+        console.log(user)
         console.log("Se intenta logear el usuario " + usuario.username) //el que escribo ahora no el que ya tengo en la db
 
-        if (!finduser) {
+        if (!user) {
           return res.status(404).send({message: 'Usuario no encontrado'})
         }
 
-        else if(finduser.validatePassword(recovered)){ //la primera contraseña es como se llama en la db y la segunda la del json
+        else if(user.validatePassword(recovered)){ //la primera contraseña es como se llama en la db y la segunda la del json
             console.log("llega? ");
-            let jwt = finduser.generateJWT();
-            console.log("su nombre es:"+ finduser.username)
-            return res.status(200).json({jwt: jwt, username: finduser.username}); //lo que se pone en el json
+            let jwt = user.generateJWT();
+            console.log("su nombre es:"+ user.username)
+            
+            
+            return res.status(200).json({jwt: jwt, username: user.username}); //lo que se pone en el json
         }
         else {
           res.status(402).send({message: 'Incorrect password'})
@@ -134,7 +139,7 @@ async function login2shared (req, res){
 
 
 
-module.exports = {login1, login2shared};
+module.exports = {login1, login2shared,getuser};
 
 
 

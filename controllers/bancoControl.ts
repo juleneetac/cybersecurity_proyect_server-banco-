@@ -7,6 +7,7 @@ import { RSA  as classRSA} from "../rsa/rsa";
 import * as objectSha from 'object-sha'
 import { bigintToHex, bigintToText, hexToBigint, textToBigint } from 'bigint-conversion';
 import { Console } from 'console';
+let loginControl = require('../controllers/loginControl');
 const got = require('got');
 const sss = require('shamirs-secret-sharing')
 
@@ -52,9 +53,20 @@ async function getPublicKeyRSAbanco(req, res) {
         signedbmhex[i] = bc.bigintToHex(signedbm[i])  // convertir a hezadecimal
         i++;
       }
-      //const signedbm = rsa.privateKey.sign(m)
-
-      res.status(200).send({msg: signedbmhex})
+      //const signedbm = rsa.privateKey.sign(m
+      let user = await loginControl.getuser()
+      console.log(user)
+      if(user.money>=m.length)  // esto es para mirar si tiene suficiente y quitar si tiene de su banco
+      {
+        user.money = user.money - m.length
+        console.log(user.money)
+        res.status(200).send({msg: signedbmhex})
+      }
+      else {
+        console.log("pobre detectado")
+        res.status(203).send({msg: "trabaja mas vago"}) //ojo no cambiar mensaje ojo
+      }
+      
     }
     catch(err) {
       console.log(err)
@@ -63,7 +75,21 @@ async function getPublicKeyRSAbanco(req, res) {
   }
 
 
+  async function verificaridmoneda(req, res) {
+    try {                                    //esto lo hará el banco
+       console.log(req.body)
+      
+      //const signedbm = rsa.privateKey.sign(m)
 
+      res.status(200).send({msg: "ok verificacion"})
+    }
+    catch(err) {
+      console.log(err)
+      res.status(500).send ({ message: err})
+    }
+
+
+  }
 
   ////////////////////////////////////////  Cosas útiles   ////////////////////////////////////////////
 
@@ -74,5 +100,6 @@ async function execrsa(){   //genera las keyPair
 
   module.exports = {
     getPublicKeyRSAbanco, 
-    get1Euro
+    get1Euro,
+    verificaridmoneda
   };
