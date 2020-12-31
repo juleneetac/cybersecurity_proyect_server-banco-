@@ -67,9 +67,7 @@ async function login1 (req, res){
       // res.status(503).send(err)
       //}
 }
-async function getuser(){
-  return user
-}
+
 
 async function login2shared (req, res){
 
@@ -136,10 +134,14 @@ async function login2shared (req, res){
 //}
 }
 
+async function getuser(){
+  return user
+}
 
 
 
-module.exports = {login1, login2shared,getuser};
+
+module.exports = {login1, login2shared, getuser};
 
 
 
