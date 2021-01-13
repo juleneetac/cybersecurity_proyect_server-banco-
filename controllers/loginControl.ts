@@ -30,7 +30,9 @@ let alex = new User("alex", "", 30)
 alex.setPassword("111")
 let pep = new User("pep", "", 30)
 pep.setPassword("222")
-let listusers = [alex, pep]
+let tienda = new User("tienda", "", 0) //user de tienda
+pep.setPassword("777")
+let listusers = [alex, pep,tienda]
 
 //users login secret sharing
 let jul = new User("jul", "", 30)
@@ -137,11 +139,14 @@ async function login2shared (req, res){
 async function getuser(){
   return user
 }
+async function gettienda(){
+  return listusers[2]
+}
 
 
 
 
-module.exports = {login1, login2shared, getuser};
+module.exports = {login1, login2shared, getuser,gettienda};
 
 
 

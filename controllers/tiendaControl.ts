@@ -15,7 +15,7 @@ let key = '89a1f34a907ff9f5d27309e73c113f8eb084f9da8a5fedc61bb1cba3f54fa5de'
 let keyBuf =Buffer.from(key, "hex")
 let rsa  = new classRSA;
 //let keyPair; //no se usa
-execrsa()   //ejecuta el generateRandomKeys() al iniciarse el program para tener las claves para todo el rato
+ //ejecuta el generateRandomKeys() al iniciarse el program para tener las claves para todo el rato
 let pubKeyClient:PublicKey;
 let ttp;
 let norepudioMessage;
@@ -228,7 +228,6 @@ async function clavessharing(){
 ////////////////////////////////////////  Cosas útiles   ////////////////////////////////////////////
 async function execrsa(){   //genera las keyPair
   let keyPair = await rsa.generateRandomKeys();  //generqa keys RSA
-  console.log("ok")
 }
 
 async function getTTPobj(){
