@@ -31,8 +31,8 @@ alex.setPassword("111")
 let pep = new User("pep", "", 30)
 pep.setPassword("222")
 let tienda = new User("tienda", "", 0) //user de tienda
-pep.setPassword("777")
-let listusers = [alex, pep,tienda]
+tienda.setPassword("777")
+let listusers = [alex, pep, tienda]
 
 //users login secret sharing
 let jul = new User("jul", "", 30)
@@ -47,7 +47,7 @@ async function login1 (req, res){
         let usuario = req.body;
         console.log("username body: " + usuario.username)
         console.log("contraseña body :" + usuario.password)
-         user = await listusers.find(x => x.username == usuario.username)
+        user = await listusers.find(x => x.username == usuario.username)
         console.log(user)
         console.log("Se intenta logear el usuario " + usuario.username) //el que escribo ahora no el que ya tengo en la db
 
