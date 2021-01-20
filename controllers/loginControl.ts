@@ -110,7 +110,7 @@ async function login2shared (req, res){
 
   let usuario = req.body;
         console.log("username body: " + usuario.username)
-        let user = await listsecret.find(x => x.username == usuario.username)
+        user = await listsecret.find(x => x.username == usuario.username)
         console.log(user)
         console.log("Se intenta logear el usuario " + usuario.username) //el que escribo ahora no el que ya tengo en la db
 

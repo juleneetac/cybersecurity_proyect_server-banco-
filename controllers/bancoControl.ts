@@ -79,7 +79,7 @@ async function get1Euro(req, res) {   // aquí el servidor firma lo que le llega
     if (user.money >= m.length)  // esto es para mirar si tiene suficiente y quitar si tiene de su banco
     {
       user.money = user.money - m.length
-      console.log(user.money)
+      console.log("Al user "+ user.username + " le queda: " + user.money + " €")
       res.status(200).send({ msg: signedbmhex })
     }
     else {
@@ -131,7 +131,7 @@ async function verificaridmoneda(req, res) {
 
           fs.appendFile('usedids.txt', data, function (err) {
             if (err) throw err;
-            console.log('Saved!');
+            console.log('Saved! la moneda se puso en un txt');
           });
           y++;
         }
@@ -142,7 +142,7 @@ async function verificaridmoneda(req, res) {
           tienda = await loginControl.gettienda()
 
           tienda.money = tienda.money + verified.length
-          console.log("la tienda tiene este dinero " + tienda.money)
+          console.log("la tienda tiene este dinero " + tienda.money + " €")
           res.status(200).send({ msg: "ok verificacion" })
     }
        // }
