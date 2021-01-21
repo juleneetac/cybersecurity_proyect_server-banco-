@@ -15,8 +15,7 @@ let smartCity = require("./routes/SmartCity");
 let app = express();
 app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json()); 
-//app.use(bodyParser.json({ type: 'application/*+json' })); //para poder enviar json con el POST
+app.use(bodyParser.json()); //para poder enviar json con el POST
 
 
 

@@ -1,51 +1,21 @@
 'use strict';
 import crypto = require('crypto');
-import { isConstructorDeclaration } from 'typescript';
-import { PublicKey } from '../rsa/publicKey';
+import { isConstructorDeclaration } from 'typescript'; //no se que hace esto
 const bc = require('bigint-conversion');
 import { RSA as classRSA } from "../rsa/rsa";
-import * as objectSha from 'object-sha'
-import { bigintToHex, bigintToText, hexToBigint, textToBigint } from 'bigint-conversion';
-import { Console } from 'console';
-import { executionAsyncId } from 'async_hooks';
 import e = require('express');
 let loginControl = require('../controllers/loginControl');
-const got = require('got');
-const sss = require('shamirs-secret-sharing')
 var fs = require("fs");
-let usadas;
 let rsa = new classRSA;
 let tienda;
 
 execrsa()   //ejecuta el generateRandomKeys() al iniciarse el program para tener las claves para todo el rato
-/* pruebafuncionaverify()
-async function pruebafuncionaverify(){
-  let idusadas;
-  let splitted= [];
-  let split=[]
 
-  idusadas= fs.readFileSync("usedids.txt", function(err, buf) {
-  if (err) { console.log(err) }
-  console.log(buf.toString());
-  //split= idusadas.split(",")
-}); 
-idusadas = idusadas.toString()
-splitted = idusadas.split("\n")
-splitted.forEach(element => {
-  if("508c8667af7470def881c84112ccfd3dd1b1692f802347eb1aaa826eb70e676c"===element)
-  {
-    console.log(element)
-    return "encontrado"
-  }
-});
-
-}  */
 ////////////////////////////////////////  RSA   ////////////////////////////////////////////
 
 async function getPublicKeyRSAbanco(req, res) {
 
   try {
-    //keyPair = await rsa.generateRandomKeys(); //NO PONER this.
 
     res.status(200).send({
       e: await bc.bigintToHex(rsa.publicKey.e),
@@ -63,7 +33,7 @@ async function getPublicKeyRSAbanco(req, res) {
 
 async function get1Euro(req, res) {   // aquí el servidor firma lo que le llega pero sin saber que es lo que le ha llegado y lo devuelve firmado
   try {                                    //esto lo hará el banco
-    const m = []; //= bc.hexToBigint(req.body.firmame);
+    const m = [];
     let signedbm = [];
     let signedbmhex = [];
     let i = 0;
@@ -73,7 +43,6 @@ async function get1Euro(req, res) {   // aquí el servidor firma lo que le llega
       signedbmhex[i] = bc.bigintToHex(signedbm[i])  // convertir a hezadecimal
       i++;
     }
-    //const signedbm = rsa.privateKey.sign(m
     let user = await loginControl.getuser()
     console.log(user)
     if (user.money >= m.length)  // esto es para mirar si tiene suficiente y quitar si tiene de su banco
@@ -106,10 +75,10 @@ async function verificaridmoneda(req, res) {
     let repetida = 0 //si0 no repe si 1 si repe
     idusadas = fs.readFileSync("usedids.txt", function (err, buf) {
       if (err) { console.log(err) }
-      //split= idusadas.split(",")
     });
     idusadas = idusadas.toString()
     splitted = idusadas.split("\n")
+
     //esto lo hará el banco
     while (y < verificame.length) {
       verificame[y] = bc.bigintToText(rsa.publicKey.verify(bc.hexToBigint(verificame[y])))  //esto ,lo hara la tienda que es quien verifique la moneda
@@ -138,17 +107,12 @@ async function verificaridmoneda(req, res) {
       }
     }
     if ((repetida == 0) && (verificame[y] == verified[y])) { //si no ha habido error
-          //const signedbm = rsa.privateKey.sign(m)
           tienda = await loginControl.gettienda()
 
           tienda.money = tienda.money + verified.length
           console.log("la tienda tiene este dinero " + tienda.money + " €")
           res.status(200).send({ msg: "ok verificacion" })
     }
-       // }
-     // }
-      
-    //}
   }
   catch (err) {
     console.log(err)

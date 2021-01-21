@@ -1,28 +1,10 @@
 'use strict';
-import crypto = require('crypto');
-import { isConstructorDeclaration } from 'typescript';
-import { PublicKey } from '../rsa/publicKey';
-const bc = require('bigint-conversion');
-import { RSA  as classRSA} from "../rsa/rsa";
-import * as objectSha from 'object-sha'
-import { bigintToHex, bigintToText, hexToBigint, textToBigint } from 'bigint-conversion';
-import { Console } from 'console';
+
+import { isConstructorDeclaration } from 'typescript';  //no se que hace esto
 import { User } from '../models/User';
-const got = require('got');
 const sss = require('shamirs-secret-sharing')
 
-let algorithm = 'aes-256-cbc';
-let key = '89a1f34a907ff9f5d27309e73c113f8eb084f9da8a5fedc61bb1cba3f54fa5de'
-let keyBuf =Buffer.from(key, "hex")
-let rsa  = new classRSA;
-//let keyPair; //no se usa
-//execrsa()   //ejecuta el generateRandomKeys() al iniciarse el program para tener las claves para todo el rato
-let pubKeyClient:PublicKey;
-let ttp;
-let norepudioMessage;
-let intID;
-let ttpPubKey: PublicKey;
-let ivc;
+//generarsecrets() por si necesitamos generar nuevos secretsharings
 
 //users login normal
 let user: User;
@@ -35,43 +17,40 @@ tienda.setPassword("777")
 let listusers = [alex, pep, tienda]
 
 //users login secret sharing
-let jul = new User("jul", "", 30)
-jul.setPassword("clavejulen")
+let julen = new User("julen", "", 30)
+julen.setPassword("clavejulen")
 let harjot = new User("harjot", "", 30)
-harjot.setPassword("clavehar")
-let listsecret = [jul, harjot]
+harjot.setPassword("claveharjot")
+let listsecret = [julen, harjot]
 
 
-async function login1 (req, res){
-        
-        let usuario = req.body;
-        console.log("username body: " + usuario.username)
-        console.log("contraseña body :" + usuario.password)
-        user = await listusers.find(x => x.username == usuario.username)
-        console.log(user)
-        console.log("Se intenta logear el usuario " + usuario.username) //el que escribo ahora no el que ya tengo en la db
+async function login1(req, res) {
 
-        if (!user) {
-          return res.status(404).send({message: 'Usuario no encontrado'})
-        } 
+  let usuario = req.body;
+  console.log("username body: " + usuario.username)
+  console.log("contraseña body :" + usuario.password)
+  user = await listusers.find(x => x.username == usuario.username)
+  console.log(user)
+  console.log("Se intenta logear el usuario " + usuario.username) //el que escribo ahora no el que ya tengo en la db
 
-        else if(user.validatePassword(usuario.password)){ //la primera contraseña es como se llama en la db y la segunda la del json
-            console.log("llega? ");
-            let jwt = user.generateJWT();
-            console.log("su nombre es:"+ user.username)
-            return res.status(200).json({jwt: jwt, username: user.username}); //lo que se pone en el json
-        }
-        else {
-          res.status(402).send({message: 'Incorrect password'})
-        }
-     // }
-      //catch (err) {
-      // res.status(503).send(err)
-      //}
+  if (!user) {
+    return res.status(404).send({ message: 'Usuario no encontrado' })
+  }
+
+  else if (user.validatePassword(usuario.password)) { //la primera contraseña es como se llama en la db y la segunda la del json
+    console.log("llega? ");
+    let jwt = user.generateJWT();
+    console.log("su nombre es:" + user.username)
+    return res.status(200).json({ jwt: jwt, username: user.username }); //lo que se pone en el json
+  }
+  else {
+    res.status(402).send({ message: 'Incorrect password' })
+  }
+
 }
 
 
-async function login2shared (req, res){
+async function login2shared(req, res) {
 
   let recovered;
   try {
@@ -79,74 +58,85 @@ async function login2shared (req, res){
     console.log([shares[0], shares[1], shares[2], shares[3]])
     let i = 0;
 
-    while(i < 4) {
-      if (shares[i] == undefined  || shares[i] == ""){
+    while (i < 4) {
+      if (shares[i] == undefined || shares[i] == "") {
         shares.splice(i, 1)
         console.log(shares)
-        if(shares.length <= i ){
+        if (shares.length <= i) {
           i = 6;   //numero cualquiera mayor que el lenght del shares[] para que se salga del while
         }
       }
-      else{
+      else {
         i++;
       }
     }
 
-    if (shares.length > 1){
+    if (shares.length > 1) {
       console.log("recovered")
       recovered = sss.combine([shares[0], shares[1]])//, shares[2], shares[3]])
       console.log(recovered)
     }
-    else{
-      recovered = "te faltas claves por poner"
+    else {
+      recovered = "te faltan claves por poner"
     }
     console.log(recovered.toString()) // 'secret key' 
   }
 
-  catch(err) {
+  catch (err) {
     console.log(err)
-    res.status(500).send ({ message: "Some input incorrect"})
+    res.status(500).send({ message: "Some input incorrect" })
   }
 
   let usuario = req.body;
-        console.log("username body: " + usuario.username)
-        user = await listsecret.find(x => x.username == usuario.username)
-        console.log(user)
-        console.log("Se intenta logear el usuario " + usuario.username) //el que escribo ahora no el que ya tengo en la db
+  console.log("username body: " + usuario.username)
+  user = await listsecret.find(x => x.username == usuario.username)
+  console.log(user)
+  console.log("Se intenta logear el usuario " + usuario.username) //el que escribo ahora no el que ya tengo en la db
 
-        if (!user) {
-          return res.status(404).send({message: 'Usuario no encontrado'})
-        }
+  if (!user) {
+    return res.status(404).send({ message: 'Usuario no encontrado' })
+  }
 
-        else if(user.validatePassword(recovered)){ //la primera contraseña es como se llama en la db y la segunda la del json
-            console.log("llega? ");
-            let jwt = user.generateJWT();
-            console.log("su nombre es:"+ user.username)
-            
-            
-            return res.status(200).json({jwt: jwt, username: user.username}); //lo que se pone en el json
-        }
-        else {
-          res.status(402).send({message: 'Incorrect password'})
-        }
+  else if (user.validatePassword(recovered)) { //la primera contraseña es como se llama en la db y la segunda la del json
+    console.log("llega? ");
+    let jwt = user.generateJWT();
+    console.log("su nombre es:" + user.username)
 
-// }
-//catch (err) {
-// res.status(503).send(err)
-//}
+
+    return res.status(200).json({ jwt: jwt, username: user.username }); //lo que se pone en el json
+  }
+  else {
+    res.status(402).send({ message: 'Incorrect password' })
+  }
+
 }
 
-async function getuser(){
+async function getuser() {
   return user
 }
-async function gettienda(){
+
+async function gettienda() {  //esto no siempre será el dos depende de losm usuarios que tengamos
   return listusers[2]
 }
 
+function generarsecrets(){
+  const secret = "claveharjot"
+  const shares = sss.split(secret, { shares: 4, threshold: 2 })
+  let i = 0                                          //Ya hemos generado las partes de la clave ya no nos hace falta
+  while (i < 7){
+    console.log(buf2hex(shares[i]))
+    i++;
+  }
+}
+
+function buf2hex(buffer) { // ArrayBuffer to hex
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+}
 
 
 
-module.exports = {login1, login2shared, getuser,gettienda};
+
+module.exports = { login1, login2shared, getuser, gettienda };
 
 
 
